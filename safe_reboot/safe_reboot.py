@@ -68,9 +68,18 @@ def is_it_safe_to_reboot(show=False):
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option('--force', '-f', help="Force reboot", default=False, is_flag=True)
 @click.option('--show', '-s', help="Only show active users", default=False, is_flag=True)
-def main(force, show):
+@click.option('--dry', '-d', help="Do not perform reboot", default=False, is_flag=True)
+def main(force, show, dry):
     """Console script for safe_reboot."""
-    safe = is_it_safe_to_reboot()
+    safe = is_it_safe_to_reboot(show)
+
+    if (safe or force) and not dry:
+        print("rebooting ...")
+        try:
+            subprocess.check_output("reboot")
+        except subprocess.CalledProcessError as e:
+            print("Do you have the correct permissions?", file=sys.stderr)
+            sys.exit(-1)
     return 0
 
 
