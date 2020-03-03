@@ -28,9 +28,8 @@ def test_content(response):
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
-    result = runner.invoke(safe_reboot.main)
+    result = runner.invoke(safe_reboot.main, ["-d"])
     assert result.exit_code == 0
-    assert 'safe_reboot.cli.main' in result.output
     help_result = runner.invoke(safe_reboot.main, ['--help'])
     assert help_result.exit_code == 0
-    assert '--help  Show this message and exit.' in help_result.output
+    assert '-h, --help   Show this message and exit.' in help_result.output
