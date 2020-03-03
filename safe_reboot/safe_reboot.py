@@ -45,22 +45,22 @@ def get_all_user_tty_linux():
     return u
 
 def is_it_safe_to_reboot(show=False):
-    if platform.system() == 'darwin':
+    if platform.system() == 'Darwin':
         users = get_all_user_tty_mac()
     elif platform.system() == 'Linux':
         users =get_all_user_tty_linux()
     else:
-        print("OS not supported!: {}".format(os.name), file=sys.stderr)
+        print("OS not supported!: {}".format(platform.system()), file=sys.stderr)
         sys.exit(-1)
-    if len(users.keys()) >= 1 or show:
+    if len(users.keys()) > 1 or show:
         print("Following users are active on the system:")
         for key in users.keys():
             print("User: {} has {} active ttys.".format(key, len(users[key])))
 
-        if len(users.keys()) >= 1:
+        if len(users.keys()) > 1:
             print("WARNING: It is not safe to reboot this machine. Other users arecurrently working here!")
     
-    if len(users.keys()) >= 1:
+    if len(users.keys()) > 1:
         return False
     else:
         return True
