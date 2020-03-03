@@ -76,7 +76,7 @@ def main(force, show, dry):
     if (safe or force) and not dry:
         print("rebooting ...")
         try:
-            subprocess.check_output("reboot")
+            subprocess.check_output("/sbin/reboot")
         except subprocess.CalledProcessError as e:
             print("Do you have the correct permissions?", file=sys.stderr)
             sys.exit(-1)
