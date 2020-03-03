@@ -55,10 +55,10 @@ def is_it_safe_to_reboot(show=False):
     if len(users.keys()) >= 1 or show:
         print("Following users are active on the system:")
         for key in users.keys():
-            print("User: {} has {} active ttys.".format(key, len(users[key])))
+            print("{} has {} active ttys.".format(key, len(users[key])))
 
         if len(users.keys()) >= 1:
-            print("WARNING: It is not safe to reboot this machine. Other users arecurrently working here!")
+            print("WARNING: It is not safe to reboot this machine. Other users are currently working here!")
     
     if len(users.keys()) >= 1:
         return False
