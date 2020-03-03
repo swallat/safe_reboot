@@ -7,7 +7,6 @@ import pytest
 from click.testing import CliRunner
 
 from safe_reboot import safe_reboot
-from safe_reboot import safe_reboot
 
 
 @pytest.fixture

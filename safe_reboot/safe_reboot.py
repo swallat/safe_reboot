@@ -23,6 +23,7 @@ def get_all_user_tty_mac():
             users[line[0]].add(line[1])
     return users
 
+
 def get_all_user_tty_linux():
     cmd = shlex.split("ps axno user,tty")
     out = subprocess.check_output(cmd).decode("utf-8")
@@ -44,13 +45,15 @@ def get_all_user_tty_linux():
         u[user_name] = users[key]
     return u
 
+
 def is_it_safe_to_reboot(show=False):
     if platform.system() == 'Darwin':
         users = get_all_user_tty_mac()
     elif platform.system() == 'Linux':
-        users =get_all_user_tty_linux()
+        users = get_all_user_tty_linux()
     else:
-        print("OS not supported!: {}".format(platform.system()), file=sys.stderr)
+        print("OS not supported!: {}"
+              .format(platform.system()), file=sys.stderr)
         sys.exit(-1)
     if len(users.keys()) > 1 or show:
         print("Following users are active on the system:")
@@ -58,17 +61,22 @@ def is_it_safe_to_reboot(show=False):
             print("{} has {} active ttys.".format(key, len(users[key])))
 
         if len(users.keys()) > 1:
-            print("WARNING: It is not safe to reboot this machine. Other users are currently working here!")
-    
+            print("WARNING: It is not safe to reboot this machine. "
+                  "Other users are currently working here!")
+
     if len(users.keys()) > 1:
         return False
     else:
         return True
-    
+
+
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option('--force', '-f', help="Force reboot", default=False, is_flag=True)
-@click.option('--show', '-s', help="Only show active users", default=False, is_flag=True)
-@click.option('--dry', '-d', help="Do not perform reboot", default=False, is_flag=True)
+@click.option('--force', '-f', help="Force reboot",
+              default=False, is_flag=True)
+@click.option('--show', '-s', help="Only show active users",
+              default=False, is_flag=True)
+@click.option('--dry', '-d', help="Do not perform reboot",
+              default=False, is_flag=True)
 def main(force, show, dry):
     """Console script for safe_reboot."""
     safe = is_it_safe_to_reboot(show)
@@ -77,7 +85,7 @@ def main(force, show, dry):
         print("rebooting ...")
         try:
             subprocess.check_output("/sbin/reboot")
-        except subprocess.CalledProcessError as e:
+        except subprocess.CalledProcessError:
             print("Do you have the correct permissions?", file=sys.stderr)
             sys.exit(-1)
     return 0
