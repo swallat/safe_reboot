@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Sebastian Wallat <sebastian@wallat.io>
+* Sebastian Wallat <devwallat@gmail.com>
 
 Contributors
 ------------
