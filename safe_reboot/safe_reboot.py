@@ -1,7 +1,7 @@
 """Console script for safe_reboot."""
 import subprocess
 import sys
-import click
+import argparse
 import shlex
 import platform
 import pwd
@@ -70,24 +70,41 @@ def is_it_safe_to_reboot(show=False):
         return True
 
 
-@click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option('--force', '-f', help="Force reboot",
-              default=False, is_flag=True)
-@click.option('--show', '-s', help="Only show active users",
-              default=False, is_flag=True)
-@click.option('--dry', '-d', help="Do not perform reboot",
-              default=False, is_flag=True)
-def main(force, show, dry):
-    """Console script for safe_reboot."""
-    safe = is_it_safe_to_reboot(show)
+def main():
+    end_param = []
+    if '--' in sys.argv:
+        idx = sys.argv.index('--')
+        begin_param = sys.argv[:idx]
+        end_param = sys.argv[idx:]
+        end_param.pop(0)
+    else:
+        begin_param = sys.argv
 
-    if (safe or force) and not dry:
-        print("rebooting ...")
-        try:
-            subprocess.check_output("/sbin/reboot")
-        except subprocess.CalledProcessError:
-            print("Do you have the correct permissions?", file=sys.stderr)
-            sys.exit(-1)
+    parser = argparse.ArgumentParser(description="Wrapper around reboot. Checks if other users are logged in or have active screen or tmux sessions. All arguments after '--' are passed to the reboot command.")
+    parser.add_argument('-f', '--force', help="Force reboot", action="store_true")
+    parser.add_argument('-s', '--show', help="Only show active users", action="store_true")
+    parser.add_argument('-d', '--dry', help="Do not perform reboot", action="store_true")
+
+    args = parser.parse_args(begin_param[1:])
+
+    """Console script for safe_reboot."""
+    safe = is_it_safe_to_reboot(args.show)
+
+    try:
+        if (safe or args.force) and not args.dry and not args.show:
+            print("CAUTION! Do you really want to restart? If so type 'yes':")
+            response = input('').lower().strip()
+            if response == "yes":
+                print("rebooting ...")
+                try:
+                    subprocess.check_output(["/sbin/reboot"] + end_param)
+                except subprocess.CalledProcessError:
+                    print("Do you have the correct permissions?", file=sys.stderr)
+                    sys.exit(-1)
+            else:
+                print("abort reboot")
+    except KeyboardInterrupt:
+        print("abort reboot")
     return 0
 
 
